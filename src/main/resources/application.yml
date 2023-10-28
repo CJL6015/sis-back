@@ -18,8 +18,6 @@ mybatis-plus:
       table-underline: true
       logic-not-delete-value: 0
       logic-delete-value: 1
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 sis:
   ip: 192.0.0.39
   port: 8080
@@ -27,7 +25,7 @@ sis:
   password: user
   path: /rtdb/remoting/RTDBDao-hessian
 influx:
-  token: dyVUUB0-FumKX40ndjkBFBwscPVMXtN21tko-o-F5qo3S6OuOLJsi95u9FL3R0P4Vs9HZWgwf6kvtp2ZP6PcSw==
-  url: http://47.122.16.159:8086
+  token: EIsIEcU--GXaRwQu7RRc0E-DE2rnRBnIyjqrQoBDPqo2bH5d8RKqVnOgarSdQbjI7odkVhieO9qzbIEL72wogQ==
+  url: http://127.0.0.1:8086
   bucket: fengcheng_hist
-  org: Jiangsu University of Science and Technology
+  org: fengcheng

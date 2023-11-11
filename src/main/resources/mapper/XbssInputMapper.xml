@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seu.sis.dao.mapper.XbssInputMapper">
+
+    <resultMap id="BaseResultMap" type="com.seu.sis.dao.domain.XbssInput">
+            <result property="id" column="ID" jdbcType="FLOAT"/>
+            <result property="tagname" column="TagName" jdbcType="VARCHAR"/>
+            <result property="varname" column="VarName" jdbcType="VARCHAR"/>
+            <result property="des" column="Des" jdbcType="VARCHAR"/>
+            <result property="unit" column="Unit" jdbcType="VARCHAR"/>
+            <result property="plant" column="Plant" jdbcType="FLOAT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ID,TagName,VarName,
+        Des,Unit,Plant
+    </sql>
+</mapper>

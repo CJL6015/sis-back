@@ -3,9 +3,12 @@ package com.seu.sis.task;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
 import com.influxdb.client.InfluxDBClient;
+import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
+import com.influxdb.query.FluxRecord;
+import com.influxdb.query.FluxTable;
 import com.seu.sis.dao.service.PointCfgService;
 import com.seu.sis.influx.InfluxConfig;
 import com.seu.sis.sis.SisClient;
@@ -43,12 +46,22 @@ public class PointDataTask {
 
     private final InfluxConfig config;
 
+    @Scheduled(fixedRate = 10000)
+    public void test() {
+        QueryApi queryApi = influxDBClient.getQueryApi();
+        List<FluxTable> query = queryApi.query("from(bucket:\"FC_XBSS\") |> range(start: -10m)|> filter(fn: (r) " +
+                "=> r[\"_measurement\"] == \"P_1\")", config.getOrg());
+        List<FluxRecord> records = query.get(0).getRecords();
+        double value =(double) records.get(records.size() - 1).getValues().get("_value");
+        System.out.println(1);
+    }
+
 
     /**
      * 从sis中获取点号的值,并写入实时数据库中
      * 每10秒执行一次
      */
-    @Scheduled(fixedRate = 10000)
+//    @Scheduled(fixedRate = 10000)
     public void fetchAndStorePointData() {
         try {
 //            List<PointCfg> list = pointCfgService.list();

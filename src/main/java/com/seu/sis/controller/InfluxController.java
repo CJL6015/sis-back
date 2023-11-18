@@ -6,14 +6,17 @@ import com.influxdb.client.domain.HealthCheck;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import com.seu.sis.influx.InfluxConfig;
+import com.seu.sis.influx.InfluxService;
 import com.seu.sis.model.entity.Result;
+import com.seu.sis.model.vo.InfluxDbQuery;
+import com.seu.sis.model.vo.TrendVO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static com.seu.sis.common.constant.StringConstant.VALUE_KEY;
 
@@ -30,6 +33,8 @@ public class InfluxController {
     private final InfluxDBClient influxDBClient;
 
     private final InfluxConfig config;
+
+    private final InfluxService influxService;
 
 
     @GetMapping("/{point}")
@@ -53,5 +58,20 @@ public class InfluxController {
     public Result<HealthCheck.StatusEnum> isConnect() {
         HealthCheck health = influxDBClient.health();
         return Result.success(health.getStatus());
+    }
+
+    @GetMapping("/now/list")
+    public Result<Map<String, Double>> listNow(String bucket, String measurements) {
+        Map<String, Double> groupNow = influxService.readGroupNow(bucket,
+                Arrays.asList(measurements.split(",")));
+        return Result.success(groupNow);
+    }
+
+    @GetMapping("/history")
+    public Result<Map<String, List<Object[]>>> getHistoryGroup(InfluxDbQuery query) {
+        String[] points = query.getPoints().split(",");
+        Map<String, List<Object[]>> history = influxService.getHistory(query.getBucket(),
+                Arrays.asList(points), query.getSt(), query.getEt());
+        return Result.success(history);
     }
 }

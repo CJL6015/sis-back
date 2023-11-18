@@ -46,7 +46,7 @@ public class PointDataTask {
 
     private final InfluxConfig config;
 
-    @Scheduled(fixedRate = 10000)
+//    @Scheduled(fixedRate = 10000)
     public void test() {
         QueryApi queryApi = influxDBClient.getQueryApi();
         List<FluxTable> query = queryApi.query("from(bucket:\"FC_XBSS\") |> range(start: -10m)|> filter(fn: (r) " +

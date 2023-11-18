@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seu.sis.dao.mapper.ThermalParamMapper">
+
+    <resultMap id="BaseResultMap" type="com.seu.sis.dao.domain.ThermalParam">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="unit" column="unit" jdbcType="VARCHAR"/>
+            <result property="p1" column="p1" jdbcType="VARCHAR"/>
+            <result property="p2" column="p2" jdbcType="VARCHAR"/>
+            <result property="p3" column="p3" jdbcType="VARCHAR"/>
+            <result property="p4" column="p4" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,unit,
+        p1,p2,p3,
+        p4
+    </sql>
+</mapper>

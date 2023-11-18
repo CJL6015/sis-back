@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seu.sis.dao.mapper.JhyhMapper">
+
+    <resultMap id="BaseResultMap" type="com.seu.sis.dao.domain.Jhyh">
+        <result property="tagname" column="TagName" jdbcType="VARCHAR"/>
+        <result property="description" column="Description" jdbcType="VARCHAR"/>
+        <result property="value" column="Value" jdbcType="FLOAT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        TagName,Description,Value
+    </sql>
+    <update id="updateValue">
+        update jhyh
+        set value =#{value}
+        where TagName = #{tagName}
+    </update>
+</mapper>

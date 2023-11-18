@@ -115,13 +115,13 @@ public class BudgetaryServiceImpl implements BudgetaryService {
             xData.add(data.get(xPoint).intValue());
             String d1Point = "LXBS_C3_" + i;
             d1.add(data.get(d1Point).intValue());
-            String d2Point = "XDLR_C3A_" + i;
+            String d2Point = "XDLR_C3D_" + i;
             d2.add(data.get(d2Point));
-            String d3Point = "XDLR_C3B_" + i;
+            String d3Point = "XDLR_C3C_" + i;
             d3.add(data.get(d3Point));
-            String d4Point = "XDLR_C3C_" + i;
+            String d4Point = "XDLR_C3B_" + i;
             d4.add(data.get(d4Point));
-            String d5Point = "XDLR_C3D_" + i;
+            String d5Point = "XDLR_C3A_" + i;
             d5.add(data.get(d5Point));
             String d6Point = "LXZDSY_C3_" + i;
             d6.add(data.get(d6Point));

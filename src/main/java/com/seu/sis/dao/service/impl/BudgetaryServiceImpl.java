@@ -90,9 +90,7 @@ public class BudgetaryServiceImpl implements BudgetaryService {
         ssyhMapper.updateValue("C2_SWDJ", param.getElectricity());
         ssyhMapper.updateValue("C2_MJ", param.getCoal());
         jhyhMapper.updateValue("C3_SWDJ", param.getElectricity());
-        jhyhMapper.updateValue("C2_MJ", param.getCoal());
-        influxService.write("JZYXSL_C2", param.getCount(), "FC_SSYH");
-        influxService.write("PJJSWD_C2", param.getTemperature(), "FC_SSYH");
+        jhyhMapper.updateValue("C3_MJ", param.getCoal());
         return true;
     }
 

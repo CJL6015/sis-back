@@ -23,53 +23,55 @@ public class HistoryServiceImpl implements HistoryService {
     private final InfluxService influxService;
 
     @Override
-    public Map<String, List<Object[]>> getHistory(Integer unitId, String st, String et) {
+    public Map<String, List<Object[]>> getHistory(Integer unitId, String st, String et,String points) {
         List<ThermalParam> list = thermalParamService.list();
-        Optional<ThermalParam> load = list.stream().filter(thermalParam -> "机组负荷".equals(thermalParam.getName())).findFirst();
-        Optional<ThermalParam> resistance = list.stream().filter(thermalParam -> "凝汽器污垢空气附加热阻".equals(thermalParam.getName())).findFirst();
-        Optional<ThermalParam> exhaust = list.stream().filter(thermalParam -> "机组排汽温度过冷度".equals(thermalParam.getName())).findFirst();
-        Optional<ThermalParam> saturation = list.stream().filter(thermalParam -> "机组饱和温度过冷度".equals(thermalParam.getName())).findFirst();
-        Optional<ThermalParam> coefficient = list.stream().filter(thermalParam -> "凝汽器阻力系数".equals(thermalParam.getName())).findFirst();
-        String loadPoint, resistancePoint, exhaustPoint, saturationPoint, coefficientPoint;
+        String[] pointList = points.split(",");
+        List<Optional<ThermalParam>> params = new ArrayList<>();
+        for (String name : pointList) {
+            Optional<ThermalParam> first = list.stream().filter(thermalParam -> name.equals(thermalParam.getName())).findFirst();
+            params.add(first);
+        }
+        Map<String, String> map = new HashMap<>(16);
         switch (unitId) {
             case 2:
-                loadPoint = load.get().getP2();
-                resistancePoint = resistance.get().getP2();
-                exhaustPoint = exhaust.get().getP2();
-                saturationPoint = saturation.get().getP2();
-                coefficientPoint = coefficient.get().getP2();
+                params.forEach(thermalParam -> {
+                    if(thermalParam.isPresent()){
+                        ThermalParam param = thermalParam.get();
+                        map.put(param.getName().trim(), param.getP2());
+                    }
+                });
                 break;
             case 3:
-                loadPoint = load.get().getP3();
-                resistancePoint = resistance.get().getP3();
-                exhaustPoint = exhaust.get().getP3();
-                saturationPoint = saturation.get().getP3();
-                coefficientPoint = coefficient.get().getP3();
+                params.forEach(thermalParam -> {
+                    if(thermalParam.isPresent()){
+                        ThermalParam param = thermalParam.get();
+                        map.put(param.getName().trim(), param.getP3());
+                    }
+                });
                 break;
             case 4:
-                loadPoint = load.get().getP4();
-                resistancePoint = resistance.get().getP4();
-                exhaustPoint = exhaust.get().getP4();
-                saturationPoint = saturation.get().getP4();
-                coefficientPoint = coefficient.get().getP4();
+                params.forEach(thermalParam -> {
+                    if(thermalParam.isPresent()){
+                        ThermalParam param = thermalParam.get();
+                        map.put(param.getName().trim(), param.getP4());
+                    }
+                });
                 break;
             default:
-                loadPoint = load.get().getP1();
-                resistancePoint = resistance.get().getP1();
-                exhaustPoint = exhaust.get().getP1();
-                saturationPoint = saturation.get().getP1();
-                coefficientPoint = coefficient.get().getP1();
+                params.forEach(thermalParam -> {
+                    if(thermalParam.isPresent()){
+                        ThermalParam param = thermalParam.get();
+                        map.put(param.getName().trim(), param.getP2());
+                    }
+                });
                 break;
         }
-        Map<String, List<Object[]>> history = influxService.getHistory("FC_XBSS", Arrays.asList(loadPoint, resistancePoint, exhaustPoint,
-                saturationPoint, coefficientPoint), st, et);
-        Map<String, List<Object[]>> result = new HashMap<>(16);
-        result.put("load", history.get(loadPoint));
-        result.put("resistance", history.get(resistancePoint));
-        result.put("exhaust", history.get(exhaustPoint));
-        result.put("saturation", history.get(saturationPoint));
-        result.put("coefficient", history.get(coefficientPoint));
 
+        Map<String, List<Object[]>> history = influxService.getHistory("FC_XBSS", new ArrayList<>(map.values()), st, et);
+        Map<String, List<Object[]>> result = new HashMap<>(16);
+        map.forEach((k,v)->{
+            result.put(k, history.get(v.trim()));
+        });
         return result;
     }
 

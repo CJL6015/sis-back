@@ -22,8 +22,8 @@ public class HistoryController {
     private final HistoryService historyService;
 
     @GetMapping("")
-    public Result<Map<String, List<Object[]>>> getHistory(Integer unitId, String st, String et) {
-        Map<String, List<Object[]>> history = historyService.getHistory(unitId, st, et);
+    public Result<Map<String, List<Object[]>>> getHistory(Integer unitId, String st, String et, String points) {
+        Map<String, List<Object[]>> history = historyService.getHistory(unitId, st, et, points);
         return Result.success(history);
     }
 

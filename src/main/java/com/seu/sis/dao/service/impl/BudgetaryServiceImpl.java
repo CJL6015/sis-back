@@ -1,6 +1,8 @@
 package com.seu.sis.dao.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.seu.sis.dao.domain.C3output;
+import com.seu.sis.dao.domain.Jhyh;
 import com.seu.sis.dao.domain.Ssyh;
 import com.seu.sis.dao.mapper.JhyhMapper;
 import com.seu.sis.dao.mapper.SsyhMapper;
@@ -91,7 +93,16 @@ public class BudgetaryServiceImpl implements BudgetaryService {
         ssyhMapper.updateValue("C2_MJ", param.getCoal());
         jhyhMapper.updateValue("C3_SWDJ", param.getElectricity());
         jhyhMapper.updateValue("C3_MJ", param.getCoal());
+        jhyhMapper.updateValue("C3_SIGNAL", 1D);
         return true;
+    }
+
+    @Override
+    public Boolean getStatus() {
+        LambdaQueryWrapper<Jhyh> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Jhyh::getTagname, "C3_SIGNAL");
+        Jhyh one = jhyhService.getOne(queryWrapper);
+        return Objects.equals(0, one.getValue().intValue());
     }
 
     @Override
@@ -108,6 +119,7 @@ public class BudgetaryServiceImpl implements BudgetaryService {
         List<Object> d4 = new ArrayList<>();
         List<Object> d5 = new ArrayList<>();
         List<Object> d6 = new ArrayList<>();
+        List<Object> d7 = new ArrayList<>();
         for (int i = 1; i <= 45; i++) {
             String xPoint = "QCZFH_C3_" + i;
             xData.add(data.get(xPoint).intValue());
@@ -121,9 +133,15 @@ public class BudgetaryServiceImpl implements BudgetaryService {
             d4.add(data.get(d4Point));
             String d5Point = "XDLR_C3A_" + i;
             d5.add(data.get(d5Point));
-            String d6Point = "LXZDSY_C3_" + i;
+            String d6Point = "LXZDMLR_C3_" + i;
             d6.add(data.get(d6Point));
+            String d7Point = "LXZDXDLR_C3_" + i;
+            d7.add(data.get(d7Point));
         }
+        Map<String, Double> groupNow = influxService.readGroupNow("FC_XBSS", Arrays.asList("P_QC", "DQXBSL_QC"));
+        List<Object> mark = new ArrayList<>();
+        mark.add(groupNow.get("P_QC"));
+        mark.add(groupNow.get("DQXBSL_QC"));
         List<List<Object>> result = new ArrayList<>();
         result.add(xData);
         result.add(d1);
@@ -132,6 +150,8 @@ public class BudgetaryServiceImpl implements BudgetaryService {
         result.add(d4);
         result.add(d5);
         result.add(d6);
+        result.add(d7);
+        result.add(mark);
         return result;
     }
 }

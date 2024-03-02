@@ -8,13 +8,13 @@ import com.influxdb.client.write.Point;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.seu.sis.common.constant.StringConstant.VALUE_KEY;
@@ -24,6 +24,7 @@ import static com.seu.sis.common.constant.StringConstant.VALUE_KEY;
  * @version 1.0
  * @date 2023-11-11 20:41
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InfluxService {
@@ -67,13 +68,24 @@ public class InfluxService {
         List<FluxTable> query = queryApi.query(String.format(QUERY_HISTORY_FORMAT, bucket, startTime,
                 endTime, measurements), config.getOrg());
         Map<String, List<Object[]>> result = new HashMap<>(32);
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
         query.forEach(fluxTable -> {
             List<FluxRecord> records = fluxTable.getRecords();
             List<Object[]> trendList = new ArrayList<>();
             for (FluxRecord record : records) {
                 Map<String, Object> values = record.getValues();
                 Object[] trend = new Object[2];
-                trend[0] = values.get("_time").toString().replace("T", " ").replace("Z", "");
+                String time = values.get("_time").toString();
+                try {
+                    trend[0] = outputFormat.format(inputFormat.parse(time));
+                } catch (ParseException e) {
+                    log.error("解析时间异常:{}", time, e);
+                    trend[0] = time;
+
+                }
                 trend[1] = (Double) values.get("_value");
                 trendList.add(trend);
             }

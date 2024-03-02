@@ -40,6 +40,12 @@ public class BudgetaryController {
         return Result.success(submit);
     }
 
+    @GetMapping("/status")
+    public Result<Boolean> status() {
+        Boolean status = budgetaryService.getStatus();
+        return Result.success(status);
+    }
+
     @GetMapping("/data")
     public Result<List<List<Object>>> getData() {
         List<List<Object>> data = budgetaryService.getData();

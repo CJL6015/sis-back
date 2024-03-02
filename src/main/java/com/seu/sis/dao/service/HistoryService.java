@@ -9,7 +9,7 @@ import java.util.Map;
  * @date 2023-11-18 12:41
  */
 public interface HistoryService {
-    Map<String, List<Object[]>> getHistory(Integer unitId, String st, String et);
+    Map<String, List<Object[]>> getHistory(Integer unitId, String st, String et,String points);
 
     List<Double[]> getScatter(Integer unitId,
                                   String x,

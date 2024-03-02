@@ -1,0 +1,31 @@
+server:
+  port: 8088
+spring:
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://47.122.16.159;databaseName=fengzheng_database
+    username: fengzheng
+    password: powerSIS#123
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  global-config:
+    db-config:
+      # 全局默认主键类型
+      id-type: auto
+      table-underline: true
+      logic-not-delete-value: 0
+      logic-delete-value: 1
+sis:
+  ip: 192.0.0.39
+  port: 8080
+  user: user
+  password: user
+  path: /rtdb/remoting/RTDBDao-hessian
+influx:
+  token: dyVUUB0-FumKX40ndjkBFBwscPVMXtN21tko-o-F5qo3S6OuOLJsi95u9FL3R0P4Vs9HZWgwf6kvtp2ZP6PcSw==
+  url: http://47.122.16.159:8086
+  bucket: fengcheng_hist
+  org: Jiangsu University of Science and Technology

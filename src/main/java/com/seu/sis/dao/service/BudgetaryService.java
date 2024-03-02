@@ -28,4 +28,6 @@ public interface BudgetaryService {
     boolean submit(BudgetaryParam param);
 
     List<List<Object>> getData();
+
+    Boolean getStatus();
 }

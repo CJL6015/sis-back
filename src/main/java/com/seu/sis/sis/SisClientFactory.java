@@ -14,8 +14,21 @@ import org.springframework.context.annotation.Configuration;
 public class SisClientFactory {
     private final SisConfig config;
 
+    public static SisClient getSisClient(SisConfig config) {
+        SisClient sisClient = null;
+        try {
+            sisClient = new SisClientGDTianrenImpl();
+            sisClient.createConnection(config.getIp(), config.getPort(),
+                    config.getPath(), config.getUser(), config.getPassword());
+        } catch (Exception e) {
+            log.error("sis实例化异常", e);
+            sisClient = null;
+        }
+        return sisClient;
+    }
+
     @Bean
-    public SisClient getSisClient() {
+    public  SisClient sisClient() {
         SisClient sisClient = null;
         try {
             sisClient = new SisClientGDTianrenImpl();

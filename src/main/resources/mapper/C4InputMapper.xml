@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seu.sis.dao.mapper.C4inputMapper">
+
+    <resultMap id="BaseResultMap" type="com.seu.sis.dao.domain.C4Input">
+            <result property="id" column="ID" jdbcType="INTEGER"/>
+            <result property="timetag" column="TimeTag" jdbcType="VARCHAR"/>
+            <result property="p1Mw" column="p1Mw" jdbcType="FLOAT"/>
+            <result property="p2Mw" column="p2Mw" jdbcType="FLOAT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ID,TimeTag,P1,
+        P2,P3,P4
+    </sql>
+    <delete id="clear">
+        truncate table c4_input
+    </delete>
+</mapper>

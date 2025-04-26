@@ -3,7 +3,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    url: jdbc:sqlserver://127.0.0.1;databaseName=fengzheng_database
+    url: jdbc:sqlserver://127.0.0.1;databaseName=HJB_Database
     username: fengcheng
     password: powerSIS#123
   mvc:
@@ -25,7 +25,7 @@ sis:
   password: user
   path: /rtdb/remoting/RTDBDao-hessian
 influx:
-  token: EIsIEcU--GXaRwQu7RRc0E-DE2rnRBnIyjqrQoBDPqo2bH5d8RKqVnOgarSdQbjI7odkVhieO9qzbIEL72wogQ==
+  token: InfluxDBtoken=lKGD1pDKCUOC_cbek9lYXlf5yK6y59hIGw-6Zx2q8MvgDY9LjlT1_COFKHHgolhsua5Z6Wryki0eOt_0ancWrA==
   url: http://127.0.0.1:8086
   bucket: fengcheng_hist
   org: fengcheng

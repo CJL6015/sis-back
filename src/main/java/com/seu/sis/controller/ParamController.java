@@ -22,8 +22,8 @@ public class ParamController {
     private final ParamService paramService;
 
     @GetMapping()
-    public Result<List<ParamVO>> getParam() {
-        List<ParamVO> params = paramService.getParams();
+    public Result<List<ParamVO>> getParam(String search) {
+        List<ParamVO> params = paramService.getParams(search);
         return Result.success(params);
     }
 

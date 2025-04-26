@@ -9,17 +9,25 @@ import lombok.Data;
 
 /**
  * 
- * @TableName JHYH
+ * @TableName C4_Output
  */
-@TableName(value ="JHYH")
+@TableName(value ="C4Output")
 @Data
-public class Jhyh implements Serializable {
+public class C4Output implements Serializable {
+    /**
+     * 
+     */
+    private Integer id;
+
     /**
      * 
      */
     private String tagname;
 
-
+    /**
+     * 
+     */
+    private String des;
 
     /**
      * 

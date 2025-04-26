@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seu.sis.dao.mapper.C4inputMapper">
+
+    <resultMap id="BaseResultMap" type="com.seu.sis.dao.domain.C4Input">
+            <result property="id" column="ID" />
+            <result property="timetag" column="TimeTag" />
+            <result property="p1Mw" column="P1_MW" />
+            <result property="p2Mw" column="P2_MW" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID,TimeTag,P1_MW,P2_MW
+    </sql>
+</mapper>

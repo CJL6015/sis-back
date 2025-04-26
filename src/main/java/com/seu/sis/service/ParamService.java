@@ -1,5 +1,6 @@
 package com.seu.sis.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.seu.sis.dao.domain.ThermalParam;
 import com.seu.sis.dao.service.ThermalParamService;
 import com.seu.sis.influx.InfluxConfig;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ParamService {
-    private static final String BUCKET = "FC_XBSS";
+    private static final String BUCKET = "HJB_XBSS";
 
     private final ThermalParamService thermalParamService;
 
@@ -33,34 +34,28 @@ public class ParamService {
     private final InfluxConfig influxConfig;
 
 
-    public List<ParamVO> getParams() {
-        List<ThermalParam> list = thermalParamService.list();
+    public List<ParamVO> getParams(String search) {
+        LambdaQueryWrapper<ThermalParam> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(ThermalParam::getName, search);
+        List<ThermalParam> list = thermalParamService.list(queryWrapper);
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         long start = System.currentTimeMillis();
         List<String> points = new ArrayList<>();
         list.forEach(s -> {
-            points.add(s.getP1());
-            points.add(s.getP2());
-            points.add(s.getP3());
-            points.add(s.getP4());
+            points.add(s.getP1().replaceAll("\\r\\n|\\r|\\n", ""));
+            points.add(s.getP2().replaceAll("\\r\\n|\\r|\\n", ""));
         });
         Map<String, Double> values = influxService.readGroupNow(BUCKET, points);
         List<ParamVO> paramVOS = list.stream().map(param -> {
-            String p1 = param.getP1();
-            String p2 = param.getP2();
-            String p3 = param.getP3();
-            String p4 = param.getP4();
-            double value1 = values.get(p1);
-            double value2 = values.get(p2);
-            double value3 = values.get(p3);
-            double value4 = values.get(p4);
+            String p1 = param.getP1().replaceAll("\\r\\n|\\r|\\n", "");
+            String p2 = param.getP2().replaceAll("\\r\\n|\\r|\\n", "");
+            double value1 = values.getOrDefault(p1, -9999.9);
+            double value2 = values.getOrDefault(p2, -9999.9);
             return ParamVO.builder()
                     .name(param.getName())
                     .unit(param.getUnit())
                     .p1(Double.parseDouble(decimalFormat.format(value1)))
                     .p2(Double.parseDouble(decimalFormat.format(value2)))
-                    .p3(Double.parseDouble(decimalFormat.format(value3)))
-                    .p4(Double.parseDouble(decimalFormat.format(value4)))
                     .build();
         }).collect(Collectors.toList());
         long end = System.currentTimeMillis();
@@ -70,6 +65,7 @@ public class ParamService {
 
     public List<String> getParamList() {
         List<ThermalParam> list = thermalParamService.list();
-        return list.stream().map(ThermalParam::getName).collect(Collectors.toList());
+        return list.stream().map(ThermalParam::getName)
+                .collect(Collectors.toList());
     }
 }

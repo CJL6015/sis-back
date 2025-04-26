@@ -4,28 +4,27 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Data;
 
 /**
  * 
- * @TableName JHYH
+ * @TableName XBPW
  */
-@TableName(value ="JHYH")
+@TableName(value ="XBPW")
 @Data
-public class Jhyh implements Serializable {
+public class Xbpw {
     /**
      * 
      */
-    private String tagname;
-
-
+    private Double plantn;
 
     /**
      * 
      */
-    private Double value;
+    private Double pw;
 
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private String des;
 }

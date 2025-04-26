@@ -79,20 +79,22 @@ public class BudgetaryServiceImpl implements BudgetaryService {
                 params.put("coal", ssyh.getValue());
             }
         }
-        String numPoint = "JZYXSL_C2";
-        String temperaturePoint = "PJJSWD_C2";
-        Map<String, Double> groupNow = influxService.readGroupNow("FC_SSYH", Arrays.asList(numPoint, temperaturePoint));
-        params.put("count", groupNow.get(numPoint));
-        params.put("temperature", groupNow.get(temperaturePoint));
+        String unit1 = "U1P_QC";
+        String unit2 = "U2P_QC";
+        String temperaturePoint1 = "DBYJSWD_1";
+        String temperaturePoint2 = "DBYJSWD_2";
+        Map<String, Double> groupNow = influxService.readGroupNow("HJB_XBSS", Arrays.asList(unit1, unit2, temperaturePoint1, temperaturePoint2));
+        params.put("unit1", groupNow.get(unit1));
+        params.put("unit2", groupNow.get(unit2));
+        params.put("temperature1", groupNow.get(temperaturePoint1));
+        params.put("temperature2", groupNow.get(temperaturePoint2));
         return params;
     }
 
     @Override
     public boolean submit(BudgetaryParam param) {
-        ssyhMapper.updateValue("C2_SWDJ", param.getElectricity());
-        ssyhMapper.updateValue("C2_MJ", param.getCoal());
-        jhyhMapper.updateValue("C3_SWDJ", param.getElectricity());
-        jhyhMapper.updateValue("C3_MJ", param.getCoal());
+        jhyhMapper.updateValue("SWDJ", param.getElectricity());
+        jhyhMapper.updateValue("MJ", param.getCoal());
         jhyhMapper.updateValue("C3_SIGNAL", 1D);
         return true;
     }
@@ -107,51 +109,76 @@ public class BudgetaryServiceImpl implements BudgetaryService {
 
     @Override
     public List<List<Object>> getData() {
+
+
         List<C3output> list = c3outputService.list();
         Map<String, Double> data = new HashMap<>();
         list.forEach(c -> {
             data.put(c.getTagname(), c.getValue());
         });
+        int read = (int) influxService.read("HJB_XBSS", "DQJZSL_QC");
         List<Object> xData = new ArrayList<>();
-        List<Object> d1 = new ArrayList<>();
-        List<Object> d2 = new ArrayList<>();
-        List<Object> d3 = new ArrayList<>();
-        List<Object> d4 = new ArrayList<>();
-        List<Object> d5 = new ArrayList<>();
-        List<Object> d6 = new ArrayList<>();
-        List<Object> d7 = new ArrayList<>();
-        for (int i = 1; i <= 45; i++) {
-            String xPoint = "QCZFH_C3_" + i;
-            xData.add(data.get(xPoint).intValue());
-            String d1Point = "LXBS_C3_" + i;
-            d1.add(data.get(d1Point).intValue());
-            String d2Point = "XDLR_C3D_" + i;
-            d2.add(data.get(d2Point));
-            String d3Point = "XDLR_C3C_" + i;
-            d3.add(data.get(d3Point));
-            String d4Point = "XDLR_C3B_" + i;
-            d4.add(data.get(d4Point));
-            String d5Point = "XDLR_C3A_" + i;
-            d5.add(data.get(d5Point));
-            String d6Point = "LXZDMLR_C3_" + i;
-            d6.add(data.get(d6Point));
-            String d7Point = "LXZDXDLR_C3_" + i;
-            d7.add(data.get(d7Point));
-        }
-        Map<String, Double> groupNow = influxService.readGroupNow("FC_XBSS", Arrays.asList("P_QC", "DQXBSL_QC"));
-        List<Object> mark = new ArrayList<>();
-        mark.add(groupNow.get("P_QC"));
-        mark.add(groupNow.get("DQXBSL_QC"));
         List<List<Object>> result = new ArrayList<>();
+        List<Object> y1 = new ArrayList<>();
+        List<Object> y2 = new ArrayList<>();
         result.add(xData);
-        result.add(d1);
-        result.add(d2);
-        result.add(d3);
-        result.add(d4);
-        result.add(d5);
-        result.add(d6);
-        result.add(d7);
-        result.add(mark);
+        result.add(y1);
+        result.add(y2);
+        if (read == 2) {
+            List<Object> d1 = new ArrayList<>();
+            List<Object> d2 = new ArrayList<>();
+            List<Object> d3 = new ArrayList<>();
+            List<Object> d4 = new ArrayList<>();
+            List<Object> d5 = new ArrayList<>();
+            List<Object> d6 = new ArrayList<>();
+            for (int i = 1; i <= 91; i++) {
+                String xPoint = "QCZFH_" + i;
+                xData.add(data.get(xPoint).intValue());
+                String d1Point = "PW6_XDLR_" + i;
+                d1.add(data.get(d1Point));
+                String d2Point = "PW5_XDLR_" + i;
+                d2.add(data.get(d2Point));
+                String d3Point = "PW4_XDLR_" + i;
+                d3.add(data.get(d3Point));
+                String d4Point = "PW3_XDLR_" + i;
+                d4.add(data.get(d4Point));
+                String d5Point = "PW2_XDLR_" + i;
+                d5.add(data.get(d5Point));
+                String d6Point = "PW1_XDLR_" + i;
+                d6.add(data.get(d6Point));
+                String d7Point = "LXZDSY_" + i;
+                y1.add(data.get(d7Point));
+                String d8Point = "LXXBPWXH_" + i;
+                y2.add(data.get(d8Point));
+            }
+            result.add(d1);
+            result.add(d2);
+            result.add(d3);
+            result.add(d4);
+            result.add(d5);
+            result.add(d6);
+        } else {
+            List<Object> d1 = new ArrayList<>();
+            List<Object> d2 = new ArrayList<>();
+            List<Object> d3 = new ArrayList<>();
+            for (int i = 1; i <= 91; i++) {
+                String xPoint = "QCZFH_" + i;
+                xData.add(data.get(xPoint).intValue());
+                String d1Point = "PW9_XDLR_" + i;
+                d1.add(data.get(d1Point));
+                String d2Point = "PW8_XDLR_" + i;
+                d2.add(data.get(d2Point));
+                String d3Point = "PW7_XDLR_" + i;
+                d3.add(data.get(d3Point));
+                String d7Point = "LXZDSY_" + i;
+                y1.add(data.get(d7Point));
+                String d8Point = "LXXBPWXH_" + i;
+                y2.add(data.get(d8Point));
+            }
+            result.add(d1);
+            result.add(d2);
+            result.add(d3);
+        }
         return result;
     }
 }

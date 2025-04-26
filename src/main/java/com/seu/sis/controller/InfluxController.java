@@ -71,7 +71,7 @@ public class InfluxController {
     public Result<Map<String, List<Object[]>>> getHistoryGroup(InfluxDbQuery query) {
         String[] points = query.getPoints().split(",");
         Map<String, List<Object[]>> history = influxService.getHistory(query.getBucket(),
-                Arrays.asList(points), query.getSt(), query.getEt());
+                Arrays.asList(points), query.getSt(), query.getEt(), "5m");
         return Result.success(history);
     }
 }

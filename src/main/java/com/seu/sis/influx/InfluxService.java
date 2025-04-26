@@ -37,7 +37,7 @@ public class InfluxService {
             "|> range(start:%s , stop:%s) " +
             "|> filter(fn: (r) => %s) " +
             "|> filter(fn: (r) => r[\"_field\"] == \"value\")\n" +
-            "|> aggregateWindow(every: 5m, fn: mean, createEmpty: false)";
+            "|> aggregateWindow(every: %s, fn: last, createEmpty: false)";
     private static final String MEASUREMENT_QUERY = "r[\"_measurement\"] == \"%s\"";
     private final InfluxConfig config;
     private final InfluxDBClient influxDBClient;
@@ -60,13 +60,13 @@ public class InfluxService {
     }
 
     public Map<String, List<Object[]>> getHistory(String bucket, List<String> points,
-                                                  String startTime, String endTime) {
+                                                  String startTime, String endTime, String period) {
         QueryApi queryApi = influxDBClient.getQueryApi();
         String measurements = points.stream()
                 .map(p -> String.format(MEASUREMENT_QUERY, p))
                 .collect(Collectors.joining(" or "));
         List<FluxTable> query = queryApi.query(String.format(QUERY_HISTORY_FORMAT, bucket, startTime,
-                endTime, measurements), config.getOrg());
+                endTime, measurements, period), config.getOrg());
         Map<String, List<Object[]>> result = new HashMap<>(32);
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));

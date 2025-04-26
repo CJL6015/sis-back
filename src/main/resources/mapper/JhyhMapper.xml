@@ -6,7 +6,6 @@
 
     <resultMap id="BaseResultMap" type="com.seu.sis.dao.domain.Jhyh">
         <result property="tagname" column="TagName" jdbcType="VARCHAR"/>
-        <result property="description" column="Description" jdbcType="VARCHAR"/>
         <result property="value" column="Value" jdbcType="FLOAT"/>
     </resultMap>
 

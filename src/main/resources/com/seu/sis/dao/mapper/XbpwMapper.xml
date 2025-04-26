@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seu.sis.dao.mapper.XbpwMapper">
+
+    <resultMap id="BaseResultMap" type="com.seu.sis.dao.domain.Xbpw">
+            <result property="plantn" column="PlantN" />
+            <result property="pw" column="PW" />
+            <result property="des" column="Des" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        PlantN,PW,Des
+    </sql>
+</mapper>

@@ -40,8 +40,18 @@ public class MainController {
 
     @GetMapping("/pump/trend")
     public Result<Map<String, List<Object[]>>> getPumpTrend(String st, String et) {
-        Map<String, List<Object[]>> history = influxService.getHistory("HJB_SSYH", ListUtil.of("LXZDSY","SJSY","JZSY","SJXBPWXH","LXXBPWXH"),
+        Map<String, List<Object[]>> history = influxService.getHistory("HJB_SSYH", ListUtil.of("LXZDSY", "SJSY", "JZSY", "SJXBPWXH", "LXXBPWXH"),
                 st, et, "5m");
         return Result.success(history);
+    }
+
+    @GetMapping("/point/info")
+    public Result<InfoService.PointInfo> getPointInfo() {
+        return Result.success(infoService.getPointInfo());
+    }
+
+    @GetMapping("/point/info1")
+    public Result<InfoService.PointInfo> getPointInfo1() {
+        return Result.success(infoService.getPointInfo1());
     }
 }

@@ -5,6 +5,7 @@ import com.seu.sis.model.param.DiagnosisScatterParam;
 import com.seu.sis.model.vo.CalculateDataVO;
 import com.seu.sis.model.vo.CalculateParam;
 import com.seu.sis.model.vo.DiagnosisVO;
+import com.seu.sis.model.vo.GateDiagnosisVO;
 import com.seu.sis.service.DiagnosisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,5 +39,25 @@ public class DiagnosisController {
     @GetMapping("/getCleanData")
     public Result<Map<String, List<Object[]>>> getCleanData(CalculateParam calculateDataVO) {
         return Result.success(diagnosisService.getCleanData(calculateDataVO));
+    }
+
+    @GetMapping("/getCleanData1")
+    public Result<Map<String, List<Object[]>>> getCleanData1(CalculateParam calculateDataVO) {
+        return Result.success(diagnosisService.getCleanData1(calculateDataVO));
+    }
+
+    @GetMapping("/getCleanData2")
+    public Result<Map<String, List<Object[]>>> getCleanData2(CalculateParam calculateDataVO) {
+        return Result.success(diagnosisService.getCleanData2(calculateDataVO));
+    }
+
+    @GetMapping("/getGateDiagnosisData")
+    public Result<GateDiagnosisVO> getGateDiagnosisData() {
+        return Result.success(diagnosisService.getGateDiagnosisData());
+    }
+
+    @GetMapping("/getGateDiagnosisData2")
+    public Result<GateDiagnosisVO> getGateDiagnosisData2() {
+        return Result.success(diagnosisService.getGateDiagnosisData2());
     }
 }

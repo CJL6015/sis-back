@@ -7,4 +7,5 @@ public class CalculateParam {
     private String startTime;
     private String endTime;
     private String period;
+    private Integer unitId;
 }

@@ -3,10 +3,17 @@ package com.seu.sis.service;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.seu.sis.dao.domain.Jhyh;
+import com.seu.sis.dao.domain.Svld;
+import com.seu.sis.dao.domain.Svtm;
 import com.seu.sis.dao.domain.Xbpw;
 import com.seu.sis.dao.service.JhyhService;
+import com.seu.sis.dao.service.SvldService;
+import com.seu.sis.dao.service.SvtmService;
 import com.seu.sis.dao.service.XbpwService;
 import com.seu.sis.influx.InfluxService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -149,6 +156,10 @@ public class InfoService {
 
     private final XbpwService xbpwService;
 
+    private final SvldService svldService;
+
+    private final SvtmService svtmService;
+
     public List<Map<String, String>> getInfo() {
 
         DecimalFormat df = new DecimalFormat("0.00");
@@ -200,7 +211,6 @@ public class InfoService {
 
         for (Map<String, String> group : INFO) {
             Map<String, String> newGroup = new HashMap<>(group);
-
             String v1Key = group.get("v1");
             String v2Key = group.get("v2");
             String v3Key = group.get("v3");
@@ -212,5 +222,50 @@ public class InfoService {
             result.add(newGroup);
         }
         return result;
+    }
+
+    public PointInfo getPointInfo() {
+        String info = "";
+        String point = "";
+        for (Svld svld : svldService.list()) {
+            if (svld.getTagname().equals("Signal")) {
+                if (svld.getValue().equals("0")) {
+                    return null;
+                }
+            }
+            if (svld.getTagname().equals("Info")) {
+                point = svld.getValue();
+            } else if (svld.getTagname().equals("TagList")) {
+                info = svld.getValue();
+            }
+        }
+        return new PointInfo(info, point);
+    }
+
+    public PointInfo getPointInfo1() {
+        //svtm
+        String info = "";
+        String point = "";
+        for (Svtm svtm : svtmService.list()) {
+            if (svtm.getTagname().equals("Signal")) {
+                if (svtm.getValue().equals("0")) {
+                    return null;
+                }
+            }
+            if (svtm.getTagname().equals("Info")) {
+                point = svtm.getValue();
+            } else if (svtm.getTagname().equals("TagList")) {
+                info = svtm.getValue();
+            }
+        }
+        return new PointInfo(info, point);
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PointInfo {
+        private String info;
+        private String point;
     }
 }

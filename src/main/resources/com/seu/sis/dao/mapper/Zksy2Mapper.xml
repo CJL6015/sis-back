@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seu.sis.dao.mapper.Zksy2Mapper">
+
+    <resultMap id="BaseResultMap" type="com.seu.sis.dao.domain.Zksy2">
+            <result property="sy" column="SY" />
+            <result property="jl" column="JL" />
+            <result property="tjks" column="TJKS" />
+            <result property="tjjs" column="TJJS" />
+            <result property="dbyjz" column="DBYJZ" />
+            <result property="dbywdjz" column="DBYWDJZ" />
+            <result property="dbyyljz" column="DBYYLJZ" />
+            <result property="gbyjz" column="GBYJZ" />
+            <result property="gbywdjz" column="GBYWDJZ" />
+            <result property="gbyyljz" column="GBYYLJZ" />
+            <result property="szd" column="SZD" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        SY,JL,TJKS,TJJS,DBYJZ,DBYWDJZ,
+        DBYYLJZ,GBYJZ,GBYWDJZ,GBYYLJZ,SZD
+    </sql>
+</mapper>

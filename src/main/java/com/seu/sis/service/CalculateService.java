@@ -1,15 +1,22 @@
 package com.seu.sis.service;
 
 import cn.hutool.core.collection.ListUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.seu.sis.dao.domain.Xbpw;
+import com.seu.sis.dao.service.XbpwService;
 import com.seu.sis.influx.InfluxService;
 import com.seu.sis.model.vo.CalculateDataVO;
 import com.seu.sis.model.vo.CalculateParam;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.seu.sis.model.vo.CalculateDataVO.TableRow;
@@ -45,7 +52,7 @@ public class CalculateService {
             "MLR_8", "ZRML_8", "XDLR_8", "QCNQQZRFH_7", "RMCB_7", "SDSY_7", "MLR_7",
             "ZRML_7", "XDLR_7");
 
-    private static List<TableRow> tableData = Arrays.asList(
+    private List<TableRow> tableData = Arrays.asList(
             new TableRow("高调门开度1(%)", "GTMKD1_1", "GTMKD1_2"),
             new TableRow("高调门开度2(%)", "GTMKD2_1", "GTMKD2_2"),
             new TableRow("高调门开度3(%)", "GTMKD3_1", "GTMKD3_2"),
@@ -59,39 +66,85 @@ public class CalculateService {
             new TableRow("实际流量(%)", "SJLL_1", "SJLL_2")
     );
     private final InfluxService influxService;
+    private final XbpwService xbpwService;
 
     public CalculateDataVO getCalculateDataVO(CalculateParam param) {
-        Map<String, List<Object[]>> hjbTm = influxService.getHistory("HJB_TM", ListUtil.of("ZFWZL_1", "SJLL_1"), param.getStartTime(), param.getEndTime(), param.getPeriod());
-        Map<String, Double> sjll1Data = hjbTm.get("ZFWZL_1").stream()
-                .collect(Collectors.toMap(data -> (String) data[0], data -> (Double) data[1]));
-        Map<String, Double> sjll2Data = hjbTm.get("SJLL_1").stream()
-                .collect(Collectors.toMap(data -> (String) data[0], data -> (Double) data[1]));
-
+        Integer unitId = param.getUnitId();
         List<List<Double>> combinedData = new ArrayList<>();
+        List<String> unitPoint = new ArrayList<>();
+        if (unitId == 1) {
+            Map<String, List<Object[]>> hjbTm = influxService.getHistory("HJB_TM", ListUtil.of("ZFWZL_1", "SJLL_1"),
+                    param.getStartTime(), param.getEndTime(), param.getPeriod());
+            Map<String, Double> sjll1Data = hjbTm.get("ZFWZL_1").stream()
+                    .collect(Collectors.toMap(data -> (String) data[0], data -> (Double) data[1]));
+            Map<String, Double> sjll2Data = hjbTm.get("SJLL_1").stream()
+                    .collect(Collectors.toMap(data -> (String) data[0], data -> (Double) data[1]));
 
-        for (String time : sjll1Data.keySet()) {
-            if (sjll2Data.containsKey(time)) {
-                combinedData.add(Arrays.asList(sjll1Data.get(time), sjll2Data.get(time)));
+
+            for (String time : sjll1Data.keySet()) {
+                if (sjll2Data.containsKey(time)) {
+                    combinedData.add(Arrays.asList(sjll1Data.get(time), sjll2Data.get(time)));
+                }
             }
-        }
-        Map<String, Double> realtimeData = influxService.readGroupNow("HJB_TM", unitPoints);
-        List<TableRow> processedTable = tableData.stream()
-                .map(row -> {
-                    String unit1Value = String.format("%.2f", realtimeData.getOrDefault(row.getUnit1(), 0D));
-                    String unit2Value = String.format("%.2f", realtimeData.getOrDefault(row.getUnit2(), 0D));
-                    return new TableRow(row.getName(), unit1Value, unit2Value);
-                })
-                .collect(Collectors.toList());
-        List<Double> allValues = new ArrayList<>();
-        for (List<Double> row : combinedData) {
-            allValues.addAll(row);
+            unitPoint = tableData.stream()
+                    .map(TableRow::getUnit1)
+                    .collect(Collectors.toList());
+        } else {
+            Map<String, List<Object[]>> hjbTm = influxService.getHistory("HJB_TM", ListUtil.of("ZFWZL_2", "SJLL_2"),
+                    param.getStartTime(), param.getEndTime(), param.getPeriod());
+            Map<String, Double> sjll1Data = hjbTm.get("ZFWZL_2").stream()
+                    .collect(Collectors.toMap(data -> (String) data[0], data -> (Double) data[1]));
+            Map<String, Double> sjll2Data = hjbTm.get("SJLL_2").stream()
+                    .collect(Collectors.toMap(data -> (String) data[0], data -> (Double) data[1]));
+
+            for (String time : sjll1Data.keySet()) {
+                if (sjll2Data.containsKey(time)) {
+                    combinedData.add(Arrays.asList(sjll1Data.get(time), sjll2Data.get(time)));
+                }
+            }
+            unitPoint = tableData.stream()
+                    .map(TableRow::getUnit2)
+                    .collect(Collectors.toList());
         }
 
-        // 计算最大值和最小值
-        Double maxValue = Collections.max(allValues);
-        Double minValue = Collections.min(allValues);
-        int maxRoundedUp = (int) Math.ceil(maxValue);
-        int minRoundedDown = (int) Math.floor(minValue);
+        Map<String, Double> realtimeData = influxService.readGroupNow("HJB_TM", unitPoint);
+        List<TableRow> processedTable;
+        int maxRoundedUp = 0, minRoundedDown = 0;
+        if (unitId == 1) {
+            processedTable = tableData.stream()
+                    .map(row -> {
+                        String unit1Value = String.format("%.2f", realtimeData.getOrDefault(row.getUnit1(), 0D));
+                        return new TableRow(row.getName(), unit1Value, "-");
+                    })
+                    .collect(Collectors.toList());
+            List<Double> allValues = new ArrayList<>();
+            for (List<Double> row : combinedData) {
+                allValues.addAll(row);
+            }
+            // 计算最大值和最小值
+            Double maxValue = Collections.max(allValues);
+            Double minValue = Collections.min(allValues);
+            maxRoundedUp = (int) Math.ceil(maxValue);
+            minRoundedDown = (int) Math.floor(minValue);
+        } else {
+            processedTable = tableData.stream()
+                    .map(row -> {
+                        String unit2Value = String.format("%.2f", realtimeData.getOrDefault(row.getUnit2(), 0D));
+                        return new TableRow(row.getName(), "-", unit2Value);
+                    })
+                    .collect(Collectors.toList());
+            List<Double> allValues = new ArrayList<>();
+            for (List<Double> row : combinedData) {
+                allValues.addAll(row);
+            }
+            // 获取所有值
+            Double maxValue = Collections.max(allValues);
+            Double minValue = Collections.min(allValues);
+            maxRoundedUp = (int) Math.ceil(maxValue);
+            minRoundedDown = (int) Math.floor(minValue);
+        }
+
+
         return new CalculateDataVO(processedTable, combinedData, maxRoundedUp, minRoundedDown);
     }
 
@@ -201,6 +254,38 @@ public class CalculateService {
                     ", value2='" + value2 + '\'' +
                     '}';
         }
+    }
+
+    public List<Overview> getOverview() {
+
+        String sjxbpwxh = "", lxxbpwxh = "";
+        List<Overview> overviews = new ArrayList<>();
+        List<String> points = ListUtil.of("SJSY", "LXZDSY", "JZSY", "LJLXZDSY", "LJSJSY", "LJJZSY", "DQXBPWXH_QC", "LXXBPWXH");
+        Map<String, Double> hjbSsyh = influxService.readGroupNow("HJB_SSYH", points);
+        List<Xbpw> xbpws = xbpwService.list();
+        for (Xbpw xbpw : xbpws) {
+            if (Objects.equals(xbpw.getPw().intValue(), hjbSsyh.getOrDefault("DQXBPWXH_QC", 0D).intValue())) {
+                sjxbpwxh = xbpw.getDes();
+            }
+            if (Objects.equals(xbpw.getPw().intValue(), hjbSsyh.getOrDefault("LXXBPWXH", 0D).intValue())) {
+                lxxbpwxh = xbpw.getDes();
+            }
+        }
+        overviews.add(new Overview("循泵配伍方式", sjxbpwxh, lxxbpwxh, "/"));
+        overviews.add(new Overview("相对利润（收益），万元/h", hjbSsyh.get("SJSY") + "", hjbSsyh.get("LXZDSY") + "", hjbSsyh.get("JZSY") + ""));
+        overviews.add(new Overview("24h累计相对利润（收益），万元", hjbSsyh.get("LJSJSY") + "", hjbSsyh.get("LJLXZDSY") + "", hjbSsyh.get("LJJZSY") + ""));
+        return overviews;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Overview {
+        private String name;
+        private String now;
+        private String optimize;
+        private String diff;
+
     }
 
 }

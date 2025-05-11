@@ -26,4 +26,9 @@ public class CalculateController {
     public Result<List<CalculateService.DataRow>> getRealtimeData() {
         return Result.success(calculateService.getRealtimeData());
     }
+
+    @GetMapping("/overview")
+    public Result<List<CalculateService.Overview>> getOverview() {
+        return Result.success(calculateService.getOverview());
+    }
 }

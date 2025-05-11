@@ -107,7 +107,7 @@ public class TestService {
         return new TestResultVO(tableData, history, status);
     }
 
-    public Boolean submit(Integer unitId) {
+    public String submit(Integer unitId) {
         LambdaUpdateWrapper<ZksySignal> queryWrapper = new LambdaUpdateWrapper<>();
         if (unitId == 1) {
             queryWrapper.eq(ZksySignal::getTagname, "ManualSY_1");
@@ -115,7 +115,24 @@ public class TestService {
             queryWrapper.eq(ZksySignal::getTagname, "ManualSY_2");
         }
         queryWrapper.set(ZksySignal::getValue, 1);
-        return zksySignalService.update(queryWrapper);
+        boolean update = zksySignalService.update(queryWrapper);
+        String status = "不在试验";
+        if (update) {
+            List<ZksySignal> list = zksySignalService.list();
+            for (ZksySignal zksySignal : list) {
+                if (zksySignal.getTagname().equals("SYZT_" + unitId) && zksySignal.getValue().intValue() == 1) {
+                    status = "正在试验(自动)";
+                    break;
+                }
+                if (zksySignal.getTagname().equals("ManualSY_" + unitId) && zksySignal.getValue().intValue() == 1) {
+                    status = "正在试验(手动)";
+                    break;
+                }
+            }
+            return status;
+        }
+
+        return status;
     }
 
 }

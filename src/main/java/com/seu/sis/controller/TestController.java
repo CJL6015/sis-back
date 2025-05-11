@@ -27,7 +27,7 @@ public class TestController {
     }
 
     @PostMapping("/submit/{unitId}")
-    public Result<Boolean> submit(@PathVariable Integer unitId) {
+    public Result<String> submit(@PathVariable Integer unitId) {
         return Result.success(testService.submit(unitId));
     }
 }

@@ -91,8 +91,20 @@ public class TestService {
         Map<String, List<Object[]>> history = influxService.getHistory("HJB_XBSS", points,
                 ((String) dataMap.get("sy")).replace(" ", "T") + "Z",
                 ((String) dataMap.get("tjjs")).replace(" ", "T") + "Z", "1m");
+        List<ZksySignal> list = zksySignalService.list();
+        String status = "不在试验";
+        for (ZksySignal zksySignal : list) {
+            if (zksySignal.getTagname().equals("SYZT_" + unitId) && zksySignal.getValue().intValue() == 1) {
+                status = "正在试验(自动)";
+                break;
+            }
+            if (zksySignal.getTagname().equals("ManualSY_" + unitId) && zksySignal.getValue().intValue() == 1) {
+                status = "正在试验(手动)";
+                break;
+            }
+        }
 
-        return new TestResultVO(tableData, history);
+        return new TestResultVO(tableData, history, status);
     }
 
     public Boolean submit(Integer unitId) {

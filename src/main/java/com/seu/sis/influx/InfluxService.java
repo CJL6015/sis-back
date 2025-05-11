@@ -14,6 +14,10 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,6 +69,8 @@ public class InfluxService {
         String measurements = points.stream()
                 .map(p -> String.format(MEASUREMENT_QUERY, p))
                 .collect(Collectors.joining(" or "));
+        startTime = beijing2Utc(startTime);
+        endTime = beijing2Utc(endTime);
         List<FluxTable> query = queryApi.query(String.format(QUERY_HISTORY_FORMAT, bucket, startTime,
                 endTime, measurements, period), config.getOrg());
         Map<String, List<Object[]>> result = new HashMap<>(32);
@@ -94,6 +100,31 @@ public class InfluxService {
             result.put((String) values.get("_measurement"), trendList);
         });
         return result;
+    }
+
+    public static String beijing2Utc(String beijingTimeStr) {
+        if (beijingTimeStr.contains("T")) {
+            beijingTimeStr=beijingTimeStr.replace("T", " ");
+        }
+        if (beijingTimeStr.contains("Z")) {
+            beijingTimeStr=beijingTimeStr.replace("Z", "");
+        }
+        if (beijingTimeStr.contains("+")) {
+            beijingTimeStr = beijingTimeStr.split("\\+")[0];
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // 将字符串解析为北京时间的 LocalDateTime
+        LocalDateTime beijingDateTime = LocalDateTime.parse(beijingTimeStr, formatter);
+
+        // 设置时区为 Asia/Shanghai（北京时间）
+        ZonedDateTime beijingZoned = beijingDateTime.atZone(ZoneId.of("Asia/Shanghai"));
+
+        // 转换为 UTC 时间
+        ZonedDateTime utcZoned = beijingZoned.withZoneSameInstant(ZoneId.of("UTC"));
+
+        // 格式化为 ISO 8601 标准格式（带 Z 表示 UTC 时间）
+        return utcZoned.format(DateTimeFormatter.ISO_INSTANT);
     }
 
     public Map<String, Double> readGroupNow(String bucket, List<String> points) {

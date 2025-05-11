@@ -260,11 +260,11 @@ public class CalculateService {
 
         String sjxbpwxh = "", lxxbpwxh = "";
         List<Overview> overviews = new ArrayList<>();
-        List<String> points = ListUtil.of("SJSY", "LXZDSY", "JZSY", "LJLXZDSY", "LJSJSY", "LJJZSY", "DQXBPWXH_QC", "LXXBPWXH");
+        List<String> points = ListUtil.of("SJSY", "LXZDSY", "JZSY", "LJLXZDSY", "LJSJSY", "LJJZSY", "SJXBPWXH", "LXXBPWXH");
         Map<String, Double> hjbSsyh = influxService.readGroupNow("HJB_SSYH", points);
         List<Xbpw> xbpws = xbpwService.list();
         for (Xbpw xbpw : xbpws) {
-            if (Objects.equals(xbpw.getPw().intValue(), hjbSsyh.getOrDefault("DQXBPWXH_QC", 0D).intValue())) {
+            if (Objects.equals(xbpw.getPw().intValue(), hjbSsyh.getOrDefault("SJXBPWXH", 0D).intValue())) {
                 sjxbpwxh = xbpw.getDes();
             }
             if (Objects.equals(xbpw.getPw().intValue(), hjbSsyh.getOrDefault("LXXBPWXH", 0D).intValue())) {

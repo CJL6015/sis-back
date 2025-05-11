@@ -14,4 +14,6 @@ public class TestResultVO {
     private List<String> tableData;
 
     private Map<String, List<Object[]>> chartValue;
+
+    private String status;
 }

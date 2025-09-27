@@ -85,7 +85,9 @@ public class TestService {
                 (String) dataMap.get("dbyyljz"),
                 (String) dataMap.get("gbyjz"),
                 (String) dataMap.get("gbywdjz"),
-                (String) dataMap.get("gbyyljz")
+                (String) dataMap.get("gbyyljz"),
+                (String) dataMap.get("dbyxjsd"),
+                (String) dataMap.get("gbyxjsd")
         );
 
         Map<String, List<Object[]>> history = influxService.getHistory("HJB_XBSS", points,

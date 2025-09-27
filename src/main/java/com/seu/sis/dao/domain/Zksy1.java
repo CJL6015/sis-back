@@ -67,4 +67,8 @@ public class Zksy1 {
      * 
      */
     private String szd;
+
+    private String dbyxjsd;
+
+    private String gbyxjsd;
 }

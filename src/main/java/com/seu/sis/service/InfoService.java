@@ -44,7 +44,7 @@ public class InfoService {
             "NQQRFH_2",
             "GBY_2",
             "DBY_2",
-            "DQXBPWXH_QC");
+            "DQXBPWXH_QC", "LQTFG_1", "CTSW_1", "JTSQWD_1", "LQTFG_2", "CTSW_2", "JTSQWD_2");
 
     private static final List<String> points2 = ListUtil.of("LXZDSY",
             "LXZDMLR",
@@ -132,7 +132,9 @@ public class InfoService {
             createGroup("#2机发电功率(MW)", "U2P_QC", "循环水泵B状态", "XHSBBDZT_1", "理想最大毛利润(万元/h)", "LXZDMLR"),
             createGroup("#2机凝汽器热负荷(kW)", "NQQRFH_2", "循环水泵C状态", "XHSBACZT_2", "实际收益(万元/h)", "SJSY"),
             createGroup("#2机高背压均值(kPa)", "GBY_2", "循环水泵D状态", "XHSBBDZT_2", "实时收益百分比(-)", "SSSYBFB"),
-            createGroup("#2机低背压均值(kPa)", "DBY_2", "实际循泵配伍", "DQXBPWXH_QC", "24h累计收益百分比(-)", "PJSYBFB")
+            createGroup("#2机低背压均值(kPa)", "DBY_2", "实际循泵配伍", "DQXBPWXH_QC", "24h累计收益百分比(-)", "PJSYBFB"),
+            createGroup("#1机冷却塔幅高值(℃)", "LQTFG_1", "#1机冷却塔出塔水温(℃)", "CTSW_1", "#1机进塔湿球温度(℃)", "JTSQWD_1"),
+            createGroup("#2机冷却塔幅高值(℃)", "LQTFG_2", "#2机冷却塔出塔水温(℃)", "CTSW_2", "#2机进塔湿球温度(℃)", "JTSQWD_2")
     ));
 
     private static Map<String, String> createGroup(String k1, String v1, String k2, String v2, String k3, String v3) {
